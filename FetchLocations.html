@@ -1,66 +1,81 @@
 <!DOCTYPE html>
 <html>
-
-<body onLoad="bodyLoaded()">
-  <script src="FetchLocationsRequests.js"></script>
-  <script src="FetchLocationsSingleRequest.js"></script>
-  <script src="Utils.js"></script>
-  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-  <script src="API_KEY.js"></script>
-  <script>
-    let streetViewService = null
-
-    function googleReady () {
-      streetViewService = new google.maps.StreetViewService()
-
-      // When Google api has been loaded, the buttons for sending a request may be used.
-
-      document.getElementById('allWithinRadiusForAll').disabled = false
+  <style>
+    #errorText {
+      color: red;
+      font-size: xx-large;
     }
-
-    function bodyLoaded () {
-      const script = document.createElement('script')
-      script.src = 'https://maps.googleapis.com/maps/api/js?key=' + API_KEY + '&libraries=geometry&callback=googleReady'
-      script.async = false
-
-      document.body.appendChild(script)
-    }
-
-    async function getAllWithinRadiusForAll () {
-      const p = new RequestParams(
-        radius = parseInt(document.getElementById('radius').value),
-        additionalStartingPoints = document.getElementById('additionalStartingPoints').checked,
-        links = document.getElementById('links').checked
-      )
-
-      const getAllRequest = new GetAllForAllRequest(
-        params = p,
-        service = streetViewService,
-        inputText = document.getElementById('latLons').value
-      )
-
-      getAllRequest.doRequest().then((value) => console.log(value))
-    }
-  </script>
-  <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-
-  <h1>Get Street View points in area</h1>
-
-  <label>Radius in meters:</label><textarea id="radius" name="radius" rows="1" cols="50">100</textarea>
-  <br />
-  <label>Simultaneous requests:</label><textarea id="simultaneousRequests" name="simultaneousRequests" rows="1"
-    cols="50">2000</textarea>
-  <br />
-  <input type="checkbox" id="additionalStartingPoints" checked>
-  <label for="additionalStartingPoints"> Get via Additional Starting Points</label><br />
-  <input type="checkbox" id="links" checked>
-  <label for="useLinks"> Get via Links</label><br />
-  <input type="checkbox" id="showAdditionals" checked>
-  <label for="showAdditionals"> Show Additionals</label><br />
-
-  <label>LatLons:</label><textarea id="latLons" name="latLons" rows="5" cols="50"></textarea><br />
-  <button type="button" onclick="getAllWithinRadiusForAll()" id="allWithinRadiusForAll" disabled="true">Get all within
+  </style>
+  <body onLoad="bodyLoaded()">
+    <script src="FetchLocationsRequests.js"></script>
+    <script src="FetchLocationsSingleRequest.js"></script>
+    <script src="Utils.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="API_KEY.js"></script>
+    <script>
+      let streetViewService = null
+      
+      function displayError(errorString) {
+        document.getElementById("errorText").innerHTML = errorString
+      }
+      
+      function googleReady () {
+        if (!API_KEY || API_KEY === 'API_KEY_HERE') {
+          displayError('API key not found. Open API_KEY.js and put in your API key.')
+          return -1
+        }
+      
+        streetViewService = new google.maps.StreetViewService()
+      
+        // When Google api has been loaded, the buttons for sending a request may be used.
+      
+        document.getElementById('allWithinRadiusForAll').disabled = false
+      }
+      
+      function bodyLoaded () {
+        const script = document.createElement('script')
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + API_KEY + '&libraries=geometry&callback=googleReady'
+        script.async = false
+      
+        document.body.appendChild(script)
+      }
+      
+      async function getAllWithinRadiusForAll () {
+        const p = new RequestParams(
+          radius = parseInt(document.getElementById('radius').value),
+          additionalStartingPoints = document.getElementById('additionalStartingPoints').checked,
+          links = document.getElementById('links').checked
+        )
+      
+        const getAllRequest = new GetAllForAllRequest(
+          params = p,
+          service = streetViewService,
+          inputText = document.getElementById('latLons').value
+        )
+      
+        getAllRequest.doRequest().then((value) => console.log(value))
+      }
+    </script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <h1>Get Street View points in area</h1>
+    <label>Radius in meters:</label>
+    <textarea id="radius" name="radius" rows="1" cols="50">100</textarea>
+    <br />
+    <label>Simultaneous requests:</label>
+    <textarea id="simultaneousRequests" name="simultaneousRequests" rows="1"
+      cols="50">2000</textarea>
+    <br />
+    <input type="checkbox" id="additionalStartingPoints" checked>
+    <label for="additionalStartingPoints"> Get via Additional Starting Points</label><br />
+    <input type="checkbox" id="links" checked>
+    <label for="useLinks"> Get via Links</label><br />
+    <input type="checkbox" id="showAdditionals" checked>
+    <label for="showAdditionals"> Show Additionals</label><br />
+    <label>LatLons:</label>
+    <textarea id="latLons" name="latLons" rows="5" cols="50"></textarea>
+    <br />
+    <button type="button" onclick="getAllWithinRadiusForAll()" id="allWithinRadiusForAll" disabled="true">Get all within
     radius</button>
-</body>
-
+    <p id="errorText"></p>
+  </body>
 </html>
