@@ -19,7 +19,7 @@ class GetAllForOneRequest {
     this.radius = this.params.radius
 
     if (latLngs.length === 1) {
-      this.center = latLngs
+      this.center = latLngs[0]
       return
     }
 

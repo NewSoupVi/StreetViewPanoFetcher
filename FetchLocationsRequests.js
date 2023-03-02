@@ -62,7 +62,7 @@ class GetAllForAllRequest {
 
       const result = singleRequest.resultingPanoIDs
 
-      // outputResult(result)
+      outputResult(result) // TODO: Actually output it to a text field
     }
     return this.done.promise
   }
