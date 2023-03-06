@@ -39,11 +39,27 @@
       
         document.body.appendChild(script)
       }
+
+      function outputResult (idToPanoObject) {
+        let outputString = ''
+
+        for (const [id, panos] of Object.entries(idToPanoObject)) {
+          outputString += id
+
+          if (panos.size) {
+            outputString += '\t'
+            outputString += Array.from(panos).map((panoObj) => panoObj.pano).join('\t')
+          }
+
+          outputString += '\n'
+        }
+
+        document.getElementById('output').innerHTML = outputString
+      }
       
       async function getAllWithinRadiusForAll () {
         const p = new RequestParams(
           radius = parseInt(document.getElementById('radius').value),
-          additionalStartingPoints = document.getElementById('additionalStartingPoints').checked,
           links = document.getElementById('links').checked
         )
       
@@ -53,7 +69,7 @@
           inputText = document.getElementById('latLons').value
         )
       
-        getAllRequest.doRequest().then((value) => console.log(value))
+        getAllRequest.doRequest().then((value) => outputResult(value))
       }
     </script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
@@ -76,6 +92,9 @@
     <br />
     <button type="button" onclick="getAllWithinRadiusForAll()" id="allWithinRadiusForAll" disabled="true">Get all within
     radius</button>
+    <label>Output:</label>
+    <textarea id="output" name="output" rows="5" cols="50"></textarea>
+    <br />
     <p id="errorText"></p>
   </body>
 </html>

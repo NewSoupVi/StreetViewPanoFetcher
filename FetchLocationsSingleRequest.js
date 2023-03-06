@@ -14,7 +14,7 @@ class GetAllForOneRequest {
     this.currentlyWorkingOn = new Set()
     this.visitedPanoIDs = new Set()
 
-    this.resultingPanoIDs = new Set()
+    this.resultingPanos = new Set()
 
     this.radius = this.params.radius
 
@@ -65,7 +65,7 @@ class GetAllForOneRequest {
         this.panoIDQueue.push(value.data.location.pano)
       }).catch(function (error) {
         if (error.code === 'ZERO_RESULTS') return
-        console.log(error.code)
+        console.log(error)
       }).finally(() => {
         this.startingPointsVisited.push(startingPoint)
         if (this.startingPointsVisited.length === this.startingPoints.length) this.startingPointsCollected.resolve()
@@ -93,7 +93,7 @@ class GetAllForOneRequest {
     this.streetViewService.getPanorama(request).then((value) => {
       if (!this.isValidPano(value.data.location)) return
 
-      this.resultingPanoIDs.add({ pano: panoID, lat: value.data.location.latLng.lat(), lng: value.data.location.latLng.lng() })
+      this.resultingPanos.add({ pano: panoID, lat: value.data.location.latLng.lat(), lng: value.data.location.latLng.lng() })
 
       for (const link of value.data.links) {
         if (this.visitedPanoIDs.has(link.pano)) continue
