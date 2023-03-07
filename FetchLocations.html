@@ -60,7 +60,9 @@
       async function getAllWithinRadiusForAll () {
         const p = new RequestParams(
           radius = parseInt(document.getElementById('radius').value),
-          links = document.getElementById('links').checked
+          links = document.getElementById('links').checked,
+          requestRadius = 45,
+          simultaneousRequests = parseInt(document.getElementById('simultaneousRequests').value)
         )
       
         const getAllRequest = new GetAllForAllRequest(
@@ -77,21 +79,18 @@
     <label>Radius in meters:</label>
     <textarea id="radius" name="radius" rows="1" cols="50">100</textarea>
     <br />
-    <label>Simultaneous requests:</label>
+    <label>Amount of IDs to work on simultaneously:</label>
     <textarea id="simultaneousRequests" name="simultaneousRequests" rows="1"
-      cols="50">2000</textarea>
+      cols="50">5</textarea>
     <br />
-    <input type="checkbox" id="additionalStartingPoints" checked>
-    <label for="additionalStartingPoints"> Get via Additional Starting Points</label><br />
     <input type="checkbox" id="links" checked>
     <label for="useLinks"> Get via Links</label><br />
-    <input type="checkbox" id="showAdditionals" checked>
-    <label for="showAdditionals"> Show Additionals</label><br />
     <label>LatLons:</label>
     <textarea id="latLons" name="latLons" rows="5" cols="50"></textarea>
     <br />
     <button type="button" onclick="getAllWithinRadiusForAll()" id="allWithinRadiusForAll" disabled="true">Get all within
     radius</button>
+    <br /><br /><br /><br />
     <label>Output:</label>
     <textarea id="output" name="output" rows="5" cols="50"></textarea>
     <br />
