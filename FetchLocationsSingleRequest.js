@@ -5,7 +5,6 @@ class GetAllForOneRequest {
     this.streetViewService = service
     this.startingPoints = []
     this.startingPointPanos = new Set()
-    this.startingPointsVisited = []
     this.startingPointsCollected = new Deferred()
     this.done = new Deferred()
     this.polygon = polygon
@@ -60,19 +59,35 @@ class GetAllForOneRequest {
     this.startingPoints = hexGrid.map((point) => getLatLngFromStartAndXY(this.center[0], this.center[1], point[0], point[1]))
     // Convert the relative sample point grid (x,y) to actual lat,lng pairs using an aviation formula.
 
-    for (const startingPoint of this.startingPoints) {
-      this.doLatLngRequest(startingPoint).then((value) => {
-        this.panoIDQueue.push(value.data.location.pano)
-      }).catch(function (error) {
-        if (error.code === 'ZERO_RESULTS') return
-        console.log(error)
-      }).finally(() => {
-        this.startingPointsVisited.push(startingPoint)
-        if (this.startingPointsVisited.length === this.startingPoints.length) this.startingPointsCollected.resolve()
-      })
+    for (let i = 0; i < 50; i++) {
+      this.collectNextAdditional()
     }
 
     return this.startingPointsCollected.promise
+  }
+
+  collectNextAdditional () {
+    if (!this.startingPoints.length) {
+      if (!this.currentlyWorkingOn.size) this.startingPointsCollected.resolve()
+      return
+    }
+
+    const startingPoint = this.startingPoints.shift()
+    this.currentlyWorkingOn.add(startingPoint)
+
+    this.doLatLngRequest(startingPoint).then((value) => {
+      this.panoIDQueue.push(value.data.location.pano)
+    }).catch(function (error) {
+      if (error.code === 'ZERO_RESULTS') return
+      // Handle insufficient resources error specifically?
+      console.log(error)
+      this.startingPoints.push(startingPoint)
+      this.currentlyWorkingOn.delete(startingPoint)
+      this.collectNextAdditional()
+    }).finally(() => {
+      this.currentlyWorkingOn.delete(startingPoint)
+      this.collectNextAdditional()
+    })
   }
 
   isValidPano (location) {
